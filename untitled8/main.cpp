@@ -10,7 +10,7 @@ int main() {
         std::string article;
         int count;
 
-        //заполнение магазина
+        // Заполнение магазина
         while (article != "stop") {
             std::cin >> article;
             if (article != "stop") {
@@ -19,22 +19,22 @@ int main() {
             }
         }
 
-        //просмотр магазина
-        for (std::map<std::string, int>::iterator it = shop.begin(); it != shop.end(); ++it) {
-            std::cout << it->first << " " << it->second << std::endl;
+        // Просмотр магазина
+        for (const auto& pair : shop) {
+            std::cout << pair.first << " " << pair.second << std::endl;
         }
 
-        //шоппинг
+        // Шоппинг
         std::string command;
-        while (command != "stop") {
-            if (command != "stop") {
+        while (true) {
+            try {
                 std::cout << "Enter the command (add/remove or stop): " << std::endl;
-                std::string user_article;
-                int user_count;
                 std::cin >> command;
 
                 if (command == "add") {
                     std::cout << "Enter the article and the quantity of the product to be added: " << std::endl;
+                    std::string user_article;
+                    int user_count;
                     std::cin >> user_article;
 
                     if (shop.find(user_article) == shop.end()) {
@@ -47,21 +47,23 @@ int main() {
                             basket.insert(std::pair<std::string, int>(user_article, user_count));
                             shop[user_article] -= user_count;
                             std::cout << "Product added successfully.\nYour basket:" << std::endl;
-                            for (std::map<std::string, int>::iterator it = basket.begin(); it != basket.end(); ++it) {
-                                std::cout << it->first << " " << it->second << std::endl;
+                            for (const auto& pair : basket) {
+                                std::cout << pair.first << " " << pair.second << std::endl;
                             }
                             std::cout << "Shop:" << std::endl;
-                            for (std::map<std::string, int>::iterator it = shop.begin(); it != shop.end(); ++it) {
-                                std::cout << it->first << " " << it->second << std::endl;
+                            for (const auto& pair : shop) {
+                                std::cout << pair.first << " " << pair.second << std::endl;
                             }
                         }
                     }
                 } else if (command == "remove") {
                     std::cout << "Enter the article and the quantity of the product to be removed: " << std::endl;
+                    std::string user_article;
+                    int user_count;
                     std::cin >> user_article;
 
                     if (basket.find(user_article) == basket.end()) {
-                        throw std::invalid_argument("Article not found in the shop");
+                        throw std::invalid_argument("Article not found in the basket");
                     } else {
                         std::cin >> user_count;
                         if (user_count <= 0 || user_count > basket[user_article]) {
@@ -70,27 +72,30 @@ int main() {
                             basket[user_article] -= user_count;
                             shop[user_article] += user_count;
                             std::cout << "Product removed successfully.\nYour basket:" << std::endl;
-                            for (std::map<std::string, int>::iterator it = basket.begin(); it != basket.end(); ++it) {
-                                std::cout << it->first << " " << it->second << std::endl;
+                            for (const auto& pair : basket) {
+                                std::cout << pair.first << " " << pair.second << std::endl;
                             }
                             std::cout << "Shop:" << std::endl;
-                            for (std::map<std::string, int>::iterator it = shop.begin(); it != shop.end(); ++it) {
-                                std::cout << it->first << " " << it->second << std::endl;
+                            for (const auto& pair : shop) {
+                                std::cout << pair.first << " " << pair.second << std::endl;
                             }
                         }
                     }
                 } else if (command == "stop") {
                     break;
                 } else {
-                    throw std::runtime_error("Invalid command");
+                    std::cout << "Invalid command. Please enter 'add', 'remove', or 'stop'." << std::endl;
                 }
+            } catch (const std::exception& e) {
+                std::cerr << "Exception caught: " << e.what() << std::endl;
+            } catch (...) {
+                std::cerr << "Unknown exception caught." << std::endl;
             }
         }
 
-    } catch (const std::exception &e) {
-        std::cerr << "Exception caught: " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Exception caught outside shopping loop: " << e.what() << std::endl;
     } catch (...) {
-        std::cerr << "Unknown exception caught." << std::endl;
+        std::cerr << "Unknown exception caught outside shopping loop." << std::endl;
     }
 }
-
